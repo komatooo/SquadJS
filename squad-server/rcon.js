@@ -215,4 +215,8 @@ export default class SquadRcon extends Rcon {
   async switchTeam(steamID) {
     await this.execute(`AdminForceTeamChange "${steamID}"`);
   }
+
+  async endMatch() {
+    await this.execute(`AdminEndMatch`);
+  }
 }
