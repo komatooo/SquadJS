@@ -94,10 +94,7 @@ export default class SquadServer extends EventEmitter {
       host: this.options.rconHost || this.options.host,
       port: this.options.rconPort,
       password: this.options.rconPassword,
-      autoReconnectInterval: this.options.rconAutoReconnectInterval,
-      dumpRconResponsesToFile: this.options.dumpRconResponsesToFile,
-      passThroughPort: this.options.rconPassThroughPort,
-      passThrough: this.options.rconPassThrough
+      autoReconnectInterval: this.options.rconAutoReconnectInterval
     });
 
     this.rcon.on('CHAT_MESSAGE', async (data) => {
@@ -217,8 +214,6 @@ export default class SquadServer extends EventEmitter {
         1,
         `Player connected ${data.playerSuffix} - SteamID: ${data.steamID} - EOSID: ${data.eosID}`
       );
-
-      this.rcon.addIds(data.steamID, data.eosID);
 
       data.player = await this.getPlayerByEOSID(data.eosID);
       if (data.player) data.player.suffix = data.playerSuffix;
@@ -482,23 +477,20 @@ export default class SquadServer extends EventEmitter {
     );
   }
 
-  async updateA2SInformation() {
+  updateA2SInformation() {
+    return this.updateServerInformation();
+  }
+
+  async updateServerInformation() {
     if (this.updateA2SInformationTimeout) clearTimeout(this.updateA2SInformationTimeout);
 
-    Logger.verbose('SquadServer', 1, `Updating A2S information...`);
+    Logger.verbose('SquadServer', 1, `Updating server information...`);
 
     try {
-      // const data = await Gamedig.query({
-      //   type: 'squad',
-      //   host: this.options.host,
-      //   port: this.options.queryPort
-      // });
-
       const rawData = await this.rcon.execute(`ShowServerInfo`);
-      Logger.verbose('SquadServer', 3, `A2S raw data`, rawData);
+      Logger.verbose('SquadServer', 3, `Server information raw data`, rawData);
       const data = JSON.parse(rawData);
-      Logger.verbose('SquadServer', 2, `A2S data`, JSON.data);
-      // Logger.verbose("SquadServer", 1, `A2S data`, JSON.stringify(data, null, 2))
+      Logger.verbose('SquadServer', 2, `Server information data`, JSON.data);
 
       const info = {
         raw: data,
@@ -520,6 +512,7 @@ export default class SquadServer extends EventEmitter {
         teamTwo: data.TeamTwo_s?.replace(new RegExp(data.MapName_s, 'i'), '') || '',
 
         matchTimeout: parseFloat(data.MatchTimeout_d),
+        matchStartTime: this.getMatchStartTimeByPlaytime(data.PLAYTIME_I),
         gameVersion: data.GameVersion_s
       };
 
@@ -530,10 +523,12 @@ export default class SquadServer extends EventEmitter {
       this.reserveSlots = info.reserveSlots;
 
       this.a2sPlayerCount = info.playerCount;
+      this.playerCount = info.playerCount;
       this.publicQueue = info.publicQueue;
       this.reserveQueue = info.reserveQueue;
 
       this.matchTimeout = info.matchTimeout;
+      this.matchStartTime = info.matchStartTime;
       this.gameVersion = info.gameVersion;
 
       if (!this.currentLayer) this.currentLayer = Layers.getLayerByClassname(info.currentLayer);
@@ -542,10 +537,10 @@ export default class SquadServer extends EventEmitter {
       this.emit('UPDATED_A2S_INFORMATION', info);
       this.emit('UPDATED_SERVER_INFORMATION', info);
     } catch (err) {
-      Logger.verbose('SquadServer', 1, 'Failed to update A2S information.', err);
+      Logger.verbose('SquadServer', 1, 'Failed to update server information.', err);
     }
 
-    Logger.verbose('SquadServer', 1, `Updated A2S information.`);
+    Logger.verbose('SquadServer', 1, `Updated server information.`);
 
     this.updateA2SInformationTimeout = setTimeout(
       this.updateA2SInformation,
@@ -601,7 +596,7 @@ export default class SquadServer extends EventEmitter {
   }
 
   async getPlayerByEOSID(eosID, forceUpdate) {
-    return this.getPlayerByCondition((player) => player.EOSID === eosID, forceUpdate);
+    return this.getPlayerByCondition((player) => player.eosID === eosID, forceUpdate);
   }
 
   async getPlayerByName(name, forceUpdate) {
@@ -667,5 +662,9 @@ export default class SquadServer extends EventEmitter {
     }
 
     this.pingSquadJSAPITimeout = setTimeout(this.pingSquadJSAPI, this.pingSquadJSAPIInterval);
+  }
+
+  getMatchStartTimeByPlaytime(playtime) {
+    return new Date(Date.now() - +playtime * 1000);
   }
 }

@@ -131,7 +131,7 @@ export default class SquadRcon extends Rcon {
     };
   }
 
-  async getListPlayers(server) {
+  async getListPlayers() {
     const response = await this.execute('ListPlayers');
 
     const players = [];
@@ -140,11 +140,9 @@ export default class SquadRcon extends Rcon {
 
     for (const line of response.split('\n')) {
       const match = line.match(
-        /^ID: (?<playerID>\d+) \| Online IDs: EOS: (?<EOSID>[a-f\d]{32}) (?:steam: (?<steamID>\d{17}) )?\| Name: (?<name>.+) \| Team ID: (?<teamID>\d|N\/A) \| Squad ID: (?<squadID>\d+|N\/A) \| Is Leader: (?<isLeader>True|False) \| Role: (?<role>.+)$/
+        /^ID: (?<playerID>\d+) \| Online IDs: EOS: (?<eosID>[a-f\d]{32}) (?:steam: (?<steamID>\d{17}) )?\| Name: (?<name>.+) \| Team ID: (?<teamID>\d|N\/A) \| Squad ID: (?<squadID>\d+|N\/A) \| Is Leader: (?<isLeader>True|False) \| Role: (?<role>.+)$/
       );
       if (!match) continue;
-
-      if (server?.rcon?.addIds) server.rcon.addIds(match[3], match[2]);
 
       const data = match.groups;
       data.isLeader = data.isLeader === 'True';
