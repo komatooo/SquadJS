@@ -212,7 +212,7 @@ export default class SquadServer extends EventEmitter {
       Logger.verbose(
         'SquadServer',
         1,
-        `Player connected ${data.playerSuffix} - SteamID: ${data.steamID} - EOSID: ${data.eosID}`
+        `Player connected ${data.playerSuffix} - SteamID: ${data.steamID} - EOSID: ${data.eosID} - IP: ${data.ip}`
       );
 
       data.player = await this.getPlayerByEOSID(data.eosID);
@@ -225,7 +225,7 @@ export default class SquadServer extends EventEmitter {
     });
 
     this.logParser.on('PLAYER_DISCONNECTED', async (data) => {
-      data.player = await this.getPlayerByEOSID(data.playerEOSID);
+      data.player = await this.getPlayerByEOSID(data.eosID);
 
       delete data.steamID;
 
