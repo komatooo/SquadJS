@@ -783,6 +783,11 @@ Grafana:
            <p>Fog of war mode to set.</p>
            <h6>Default</h6>
            <pre><code>1</code></pre></li>
+<li><h4>allowedForGameModes</h4>
+           <h6>Description</h6>
+           <p>Allowed game modes for enabling fog of war</p>
+           <h6>Default</h6>
+           <pre><code>[]</code></pre></li>
 <li><h4>delay</h4>
            <h6>Description</h6>
            <p>Delay before setting fog of war mode.</p>

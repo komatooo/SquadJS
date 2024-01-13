@@ -209,6 +209,7 @@
       "plugin": "FogOfWar",
       "enabled": false,
       "mode": 1,
+      "allowedForGameModes": [],
       "delay": 10000
     },
     {
