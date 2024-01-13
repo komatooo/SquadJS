@@ -19,7 +19,7 @@ export default class FogOfWar extends BasePlugin {
       allowedForGameModes: {
         required: false,
         description: 'Allowed game modes for enabling fog of war',
-        default: []
+        default: ['AAS', 'RAAS', 'Invasion', 'Insurgency', 'Skirmish']
       },
       delay: {
         required: false,
@@ -45,16 +45,17 @@ export default class FogOfWar extends BasePlugin {
 
   async onNewGame() {
     setTimeout(async () => {
-      if (this.options.mode === 1 && this.options.allowedForGameModes.length > 0) {
+      let isFogEnabled = this.options.mode;
+      if (isFogEnabled === 1 && this.options.allowedForGameModes.length > 0) {
         const currentMap = await this.server.rcon.getCurrentMap();
-        this.options.mode = this.options.allowedForGameModes.some((gameMode) =>
+        isFogEnabled = this.options.allowedForGameModes.some((gameMode) =>
           currentMap.layer.includes(gameMode)
         )
           ? 1
           : 0;
       }
 
-      await this.server.rcon.setFogOfWar(this.options.mode);
+      await this.server.rcon.setFogOfWar(isFogEnabled);
     }, this.options.delay);
   }
 }

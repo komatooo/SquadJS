@@ -209,7 +209,13 @@
       "plugin": "FogOfWar",
       "enabled": false,
       "mode": 1,
-      "allowedForGameModes": [],
+      "allowedForGameModes": [
+        "AAS",
+        "RAAS",
+        "Invasion",
+        "Insurgency",
+        "Skirmish"
+      ],
       "delay": 10000
     },
     {

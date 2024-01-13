@@ -787,7 +787,13 @@ Grafana:
            <h6>Description</h6>
            <p>Allowed game modes for enabling fog of war</p>
            <h6>Default</h6>
-           <pre><code>[]</code></pre></li>
+           <pre><code>[
+  "AAS",
+  "RAAS",
+  "Invasion",
+  "Insurgency",
+  "Skirmish"
+]</code></pre></li>
 <li><h4>delay</h4>
            <h6>Description</h6>
            <p>Delay before setting fog of war mode.</p>
