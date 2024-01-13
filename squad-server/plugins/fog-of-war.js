@@ -39,8 +39,10 @@ export default class FogOfWar extends BasePlugin {
   }
 
   async onNewGame() {
-    setTimeout(() => {
-      this.server.rcon.setFogOfWar(this.options.mode);
+    setTimeout(async () => {
+      const currentMap = await this.server.rcon.getCurrentMap();
+      this.options.mode = currentMap.layer.includes('RAAS') ? 1 : 0;
+      await this.server.rcon.setFogOfWar(this.options.mode);
     }, this.options.delay);
   }
 }
