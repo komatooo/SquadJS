@@ -27,7 +27,7 @@ import PlayerJoinSucceeded from './player-join-succeeded.js';
 import CheckPermissionResolveEosid from './check-permission-resolve-eosid.js';
 export default class SquadLogParser extends LogParser {
   constructor(options) {
-    super('SquadGame.log', options);
+    super(options.filename ? options.filename  : 'SquadGame.log', options);
   }
 
   getRules() {
