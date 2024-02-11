@@ -43,6 +43,29 @@ export default class DBLog extends BasePlugin {
     super(server, options, connectors);
 
     this.models = {};
+    
+    this.createModel(
+      'LinkCode',
+      {
+          id: {
+              type: DataTypes.INTEGER,
+              primaryKey: true,
+              autoIncrement: true
+          },
+          linkCode: {
+              type: DataTypes.STRING,
+              allowNull: false
+          },
+          discordID: {
+              type: DataTypes.STRING,
+              allowNull: false
+          }
+      },
+      {
+          charset: 'utf8mb4',
+          collate: 'utf8mb4_unicode_ci'
+      }
+    );
 
     this.createModel('Server', {
       id: {
@@ -149,40 +172,45 @@ export default class DBLog extends BasePlugin {
     this.createModel(
       'Player',
       {
-        id: {
-          type: DataTypes.INTEGER,
-          primaryKey: true,
-          autoIncrement: true
-        },
-        eosID: {
-          type: DataTypes.STRING,
-          unique: true
-        },
-        steamID: {
-          type: DataTypes.STRING,
-          notNull: true,
-          unique: true
-        },
-        lastName: {
-          type: DataTypes.STRING
-        },
-        lastIP: {
-          type: DataTypes.STRING
-        }
+          id: {
+              type: DataTypes.INTEGER,
+              primaryKey: true,
+              autoIncrement: true
+          },
+          eosID: {
+              type: DataTypes.STRING,
+              unique: true
+          },
+          steamID: {
+              type: DataTypes.STRING,
+              notNull: true,
+              unique: true
+          },
+          lastName: {
+              type: DataTypes.STRING
+          },
+          lastIP: {
+              type: DataTypes.STRING
+          },
+          discordID: {
+              type: DataTypes.STRING,
+              allowNull: true,
+              defaultValue: null
+          }
       },
       {
-        charset: 'utf8mb4',
-        collate: 'utf8mb4_unicode_ci',
-        indexes: [
-          {
-            fields: ['eosID']
-          },
-          {
-            fields: ['steamID']
-          }
-        ]
+          charset: 'utf8mb4',
+          collate: 'utf8mb4_unicode_ci',
+          indexes: [
+              {
+                  fields: ['eosID']
+              },
+              {
+                  fields: ['steamID']
+              }
+          ]
       }
-    );
+  );
 
     this.createModel(
       'Wound',
@@ -452,6 +480,7 @@ export default class DBLog extends BasePlugin {
   }
 
   async prepareToMount() {
+    await this.models.LinkCode.sync();
     await this.models.Server.sync();
     await this.models.Match.sync();
     await this.models.TickRate.sync();
@@ -758,3 +787,4 @@ export default class DBLog extends BasePlugin {
     await this.models.Player.sync();
   }
 }
+
